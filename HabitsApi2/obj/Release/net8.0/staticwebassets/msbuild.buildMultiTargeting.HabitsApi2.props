@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\HabitsApi2.props" />
+</Project>

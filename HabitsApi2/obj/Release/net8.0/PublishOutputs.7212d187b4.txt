@@ -1,0 +1,16 @@
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\HabitsApi2.exe
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\appsettings.Development.json
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\appsettings.json
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\HabitsApi2.dll
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\HabitsApi2.deps.json
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\HabitsApi2.runtimeconfig.json
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\HabitsApi2.pdb
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\Microsoft.EntityFrameworkCore.dll
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\Microsoft.EntityFrameworkCore.Relational.dll
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\Microsoft.OpenApi.dll
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\MySqlConnector.dll
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\Pomelo.EntityFrameworkCore.MySql.dll
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\obj\Release\net8.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerUI.dll

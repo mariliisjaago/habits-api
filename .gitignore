@@ -1,0 +1,13 @@
+# ignore appsettings
+appsettings.json
+appsettings.Development.json
+
+# ignore ALL .log files
+*.log
+
+# environment-specific files
+*.env
+config/dev-env.conf
+
+#ignore vs folder
+.vs/

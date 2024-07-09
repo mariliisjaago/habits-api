@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\Users\Mari\source\repos\HabitsApi2\HabitsApi2\bin\Release\net8.0\publish\</_PublishTargetUrl>
+    <History>True|2024-06-24T09:28:38.0845961Z;True|2024-05-29T08:11:43.4513280+03:00;False|2024-05-29T08:11:27.0431993+03:00;True|2024-05-29T08:02:14.4727296+03:00;True|2024-05-29T07:48:32.9114405+03:00;True|2024-03-16T12:38:02.8398273+02:00;True|2024-03-16T12:35:02.3680042+02:00;True|2024-03-16T11:57:14.5251357+02:00;True|2024-03-16T11:54:22.0412299+02:00;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>
