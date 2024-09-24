@@ -1,6 +1,6 @@
 ﻿namespace HabitsApi2.Models
 {
-    public class NewGoal
+    public class NewGoalDto
     {
         public string Title { get; set; }
         public string Text { get; set; }

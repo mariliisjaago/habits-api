@@ -1,4 +1,5 @@
 ﻿using HabitsApi2.DataAccess;
+using HabitsApi2.Helpers;
 using HabitsApi2.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,12 +17,10 @@ namespace HabitsApi2.Services
         public async Task<List<GoalViewModel>> GetAll()
         {
             var goals = await _goalRepository.GetAllAsync();
-            var result = new List<GoalViewModel>();
-            ProcessPostOrder(goals.ToList(), result);
-            return result;
+            return goals.Select(g => ToViewModel(g)).ToList();
         }
 
-        private void ProcessPreOrder(List<Goal> goals, List<GoalViewModel> result)
+        /*private void ProcessPreOrder(List<Goal> goals, List<GoalViewModel> result)
         {
             var firstGoal = goals.FirstOrDefault();
             if (firstGoal != null)
@@ -38,34 +37,35 @@ namespace HabitsApi2.Services
                 firstGoal.IsRoot = true;
                 firstGoal.ProcessPostOrder(result);
             }
-        }
+        }*/
 
-        private List<GoalViewModel> ToViewModelList(List<Goal> goals)
+        private GoalViewModel ToViewModel(Goal goal)
         {
-            var result = new List<GoalViewModel>();
-            foreach (var goal in goals)
+            if (goal == null)
             {
-                result.Add(new GoalViewModel(goal.Id, 0, goal.FirstChildId, goal.NextSiblingId, goal.Title, goal.Content, goal.IsCompleted, goal.IsFirstChild, goal.IsRoot, null, null));
+                return null;
             }
-
-            return result;
+        
+            
+            var viewModel = new GoalViewModel(goal.Id, 0, goal.FirstChildId, goal.NextSiblingId, goal.Title, goal.Content, goal.IsCompleted, goal.CompletedDate, goal.IsFirstChild, goal.IsRoot, ToViewModel(goal.FirstChild), ToViewModel(goal.NextSibling));
+            return viewModel;
         }
 
-        public async Task AddGoal(NewGoal newGoal)
+        public async Task AddGoal(NewGoalDto newGoal)
         {
-            var goalDbObject = new Goal()
+            if (newGoal.IsRoot)
             {
-                CreatedDate = DateTime.UtcNow,
-                ModifiedDate = DateTime.UtcNow,
-                CompletedDate = DateTime.UtcNow,
-                Title = newGoal.Title,
-                Content = newGoal.Text,
-                FirstChildId = 0,
-                NextSiblingId = 0,
-                IsRoot = newGoal.IsRoot,
-                IsCompleted = false,
-                Type = "Work"
-            };
+                AddRootGoal(newGoal);
+            }
+            else
+            {
+                await AddNonRootGoal(newGoal);
+            }
+        }
+
+        private async Task AddNonRootGoal(NewGoalDto newGoal)
+        {
+            var goalDbObject = newGoal.ToGoal();
 
             var parentsLastChild = await _goalRepository.GetLastChild(newGoal.ParentGoalId);
             if (parentsLastChild != null)
@@ -83,6 +83,12 @@ namespace HabitsApi2.Services
                 parentGoal.ModifiedDate = DateTime.UtcNow;
                 _goalRepository.UpdateGoal(parentGoal);
             }
+        }
+
+        private void AddRootGoal(NewGoalDto newGoal)
+        {
+            var goalDbObject = newGoal.ToGoal();
+            var addedGoalId = _goalRepository.AddNewGoal(goalDbObject);
         }
 
         public async Task DeleteGoal(int id)
@@ -103,14 +109,12 @@ namespace HabitsApi2.Services
                 var potentialPreviousSibling = _goalRepository.GetPreviousSibling(id);
                 if (potentialPreviousSibling != null)
                 {
-                    // handle 1
                     potentialPreviousSibling.NextSiblingId = 0;
                     _goalRepository.UpdateGoal(potentialPreviousSibling);
                     await _goalRepository.Delete(id);
                 }
                 else
                 {
-                    // handle 4
                     var parentGoal = _goalRepository.GetParent(id);
                     if (parentGoal == null)
                     {
@@ -132,14 +136,12 @@ namespace HabitsApi2.Services
                 var potentialPreviousSibling = _goalRepository.GetPreviousSibling(id);
                 if (potentialPreviousSibling != null)
                 {
-                    // handle 2
                     potentialPreviousSibling.NextSiblingId = goal.NextSiblingId;
                     _goalRepository.UpdateGoal(potentialPreviousSibling);
                     await _goalRepository.Delete(id);
                 }
                 else
                 {
-                    // handle 3
                     var parentGoal = _goalRepository.GetParent(id);
                     if (parentGoal == null)
                     {
@@ -153,6 +155,14 @@ namespace HabitsApi2.Services
                     }
                 }
             }
+        }
+
+        public async Task UpdateGoal(UpdateGoalDto updatedGoal)
+        {
+            var goal = await _goalRepository.GetById(updatedGoal.Id);
+            goal.IsCompleted = updatedGoal.IsCompleted;
+            goal.CompletedDate = updatedGoal.CompletedDate;
+            _goalRepository.UpdateGoal(goal);
         }
     }
 }

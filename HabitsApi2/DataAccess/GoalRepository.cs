@@ -14,15 +14,15 @@ namespace HabitsApi2.DataAccess
         public async Task<IEnumerable<Goal>> GetAllAsync()
         {
             var goals = await _dbContext.Goals.ToListAsync<Goal>();
-            foreach (var goal in goals)
+            var roots = goals.Where(g => g.IsRoot);
+            var result = new List<Goal>();
+
+            foreach(var root in roots)
             {
-                var firstChild = goals.FirstOrDefault(g => g.Id == goal.FirstChildId);
-                goal.FirstChild = firstChild;
-                var nextSibling = goals.FirstOrDefault(g => g.Id == goal.NextSiblingId);
-                goal.NextSibling = nextSibling;
+                root.ProcessPostOrderNotViewModel(result, goals);
             }
 
-            return goals;
+            return result;
         }
 
         public async Task<Goal> GetLastChild(int id)

@@ -24,9 +24,8 @@ namespace HabitsApi2.Controllers
         }
 
         [HttpPost(Name = "addGoal")]
-        public async Task<ActionResult<bool>> AddGoal([FromBody] NewGoal newGoal)
+        public async Task<ActionResult<bool>> AddGoal([FromBody] NewGoalDto newGoal)
         {
-            int temp = 0;
             await _goalsService.AddGoal(newGoal);
             return true;
         }
@@ -34,8 +33,14 @@ namespace HabitsApi2.Controllers
         [HttpDelete]
         public async Task<ActionResult<bool>> DeleteGoal(int id)
         {
-            int temp = 0;
             await _goalsService.DeleteGoal(id);
+            return true;
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<bool>> UpdateGoal([FromQuery] int id, [FromBody] UpdateGoalDto updatedGoal)
+        {
+            await _goalsService.UpdateGoal(updatedGoal);
             return true;
         }
     }

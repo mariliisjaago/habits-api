@@ -13,10 +13,11 @@ namespace HabitsApi2.Models
         public string Title { get; set; }
         public string Text { get; set; }
         public bool IsCompleted { get; set; }
+        public DateTime? CompletedDate { get; set; }
         public bool IsFirstChild { get; set; }
         public bool IsRoot { get; set; }
 
-        public GoalViewModel(int id, int parentGoalId, int firstChildId, int nextSiblingId, string title, string text, bool isCompleted, bool isFirstChild, bool isRoot, GoalViewModel? firstChild, GoalViewModel? nextSibling) 
+        public GoalViewModel(int id, int parentGoalId, int firstChildId, int nextSiblingId, string title, string text, bool isCompleted, DateTime? completedDate, bool isFirstChild, bool isRoot, GoalViewModel firstChild, GoalViewModel nextSibling) 
         {
             Id = id;
             ParentGoalId = parentGoalId;
@@ -25,6 +26,7 @@ namespace HabitsApi2.Models
             Title = title;
             Text = text;
             IsCompleted = isCompleted;
+            CompletedDate = completedDate;
             IsFirstChild = isFirstChild;
             IsRoot = isRoot;
             FirstChild = firstChild;

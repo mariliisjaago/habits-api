@@ -9,8 +9,7 @@ namespace HabitsApi2.Models
         public int Id { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
-
-        public DateTime CompletedDate { get; set; }
+        public DateTime? CompletedDate { get; set; }
 
         public int FirstChildId { get; set; }
 
@@ -22,22 +21,15 @@ namespace HabitsApi2.Models
         [NotMapped]
         public Goal NextSibling { get; set; }
         
-        [NotMapped]
-        public string InfoStr
-        {
-            get => $"{Title}, IsCompleted={IsCompleted}"; set { }
-        }
         public string Type { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-        public bool IsCompleted { get; set; } = false;
+        public bool IsCompleted { get; set; }
+        public bool IsRoot { get; set; }
         [NotMapped]
-        public bool IsRoot { get; set; } = false;
-        
-        [NotMapped]
-        public bool IsFirstChild { get; set; } = false;
+        public bool IsFirstChild { get; set; }
 
-        public void ProcessPreOrder(List<GoalViewModel> result)
+        /*public void ProcessPreOrder(List<GoalViewModel> result)
         {
             var viewModel = new GoalViewModel(Id, 0, FirstChildId, NextSiblingId, Title, Content, IsCompleted, IsFirstChild, IsRoot, null, null);
             viewModel.FirstChild = new GoalViewModel(FirstChild.Id, Id, FirstChild.FirstChildId, FirstChild.NextSiblingId, FirstChild.Title, FirstChild.Content, FirstChild.IsCompleted, FirstChild.IsFirstChild, FirstChild.IsRoot, null, null);
@@ -55,9 +47,9 @@ namespace HabitsApi2.Models
                 nextPointer.ProcessPreOrder(result);
                 nextPointer = nextPointer.NextSibling;
             }
-        }
+        }*/
 
-        public void ProcessPostOrder(List<GoalViewModel> result)
+        /*public void ProcessPostOrder(List<GoalViewModel> result)
         {
             var nextPointer = FirstChild;
             if (nextPointer != null)
@@ -81,9 +73,39 @@ namespace HabitsApi2.Models
             }
            
             result.Add(viewModel);
+        }*/
+
+        public void ProcessPostOrderNotViewModel(List<Goal> result, List<Goal> allGoals)
+        {
+            if (FirstChildId != 0)
+            {
+                var firstChild = allGoals.FirstOrDefault(g => g.Id == FirstChildId);
+                FirstChild = firstChild;
+            }
+            if (NextSiblingId != 0)
+            {
+                var nextSibling = allGoals.FirstOrDefault(g => g.Id == NextSiblingId);
+                NextSibling = nextSibling;
+            }
+
+            var nextPointer = FirstChild;
+            if (nextPointer != null)
+            {
+                nextPointer.IsFirstChild = true;
+            }
+            while (nextPointer != null)
+            {
+                nextPointer.ProcessPostOrderNotViewModel(result, allGoals);
+                nextPointer = nextPointer.NextSibling;
+            }
+
+            if (IsRoot)
+            {
+                result.Add(this);
+            }
         }
 
-        public GoalViewModel GetViewModel(Goal goal)
+        /*public GoalViewModel GetViewModel(Goal goal)
         {
             if (goal == null)
             {
@@ -99,11 +121,12 @@ namespace HabitsApi2.Models
                 Title = goal.Title,
                 Text = goal.Content,
                 IsCompleted = goal.IsCompleted,
+                CompletedDate = goal.CompletedDate,
                 IsFirstChild = goal.IsFirstChild,
                 FirstChild = GetViewModel(goal.FirstChild),
                 NextSibling = GetViewModel(goal.NextSibling),
                 IsRoot = goal.IsRoot
             };
-        }
+        }*/
     }
 }
