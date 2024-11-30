@@ -1,17 +1,19 @@
-﻿using HabitsApi2.DataAccess;
+﻿using HabitsApi2.Context;
+using HabitsApi2.DataAccess;
 using HabitsApi2.Helpers;
 using HabitsApi2.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace HabitsApi2.Services
 {
     public class GoalsService : IGoalsService
     {
-        private IGoalRepository _goalRepository;
+        private readonly IGoalRepository _goalRepository;
+        private readonly HabitContext _db;
 
-        public GoalsService(IGoalRepository goalRepository)
+        public GoalsService(IGoalRepository goalRepository, HabitContext db)
         {
-            _goalRepository = goalRepository;   
+            _goalRepository = goalRepository;
+            _db = db;
         }
 
         public async Task<List<GoalViewModel>> GetAll()
@@ -19,25 +21,6 @@ namespace HabitsApi2.Services
             var goals = await _goalRepository.GetAllAsync();
             return goals.Select(g => ToViewModel(g)).ToList();
         }
-
-        /*private void ProcessPreOrder(List<Goal> goals, List<GoalViewModel> result)
-        {
-            var firstGoal = goals.FirstOrDefault();
-            if (firstGoal != null)
-            {
-                firstGoal.ProcessPreOrder(result);
-            }
-        }
-
-        private void ProcessPostOrder(List<Goal> goals, List<GoalViewModel> result)
-        {
-            var firstGoal = goals.FirstOrDefault();
-            if (firstGoal != null)
-            {
-                firstGoal.IsRoot = true;
-                firstGoal.ProcessPostOrder(result);
-            }
-        }*/
 
         private GoalViewModel ToViewModel(Goal goal)
         {
@@ -47,23 +30,23 @@ namespace HabitsApi2.Services
             }
         
             
-            var viewModel = new GoalViewModel(goal.Id, 0, goal.FirstChildId, goal.NextSiblingId, goal.Title, goal.Content, goal.IsCompleted, goal.CompletedDate, goal.IsFirstChild, goal.IsRoot, ToViewModel(goal.FirstChild), ToViewModel(goal.NextSibling));
+            var viewModel = new GoalViewModel(goal.Id, 0, goal.FirstChildId, goal.NextSiblingId, goal.Title, goal.Content, goal.IsCompleted, goal.CompletedDate, goal.IsFirstChild, goal.IsRoot, ToViewModel(goal.FirstChild), ToViewModel(goal.NextSibling), goal.UserId);
             return viewModel;
         }
 
-        public async Task AddGoal(NewGoalDto newGoal)
+        public async Task<int> AddGoal(NewGoalDto newGoal)
         {
             if (newGoal.IsRoot)
             {
-                AddRootGoal(newGoal);
+                return AddRootGoal(newGoal);
             }
             else
             {
-                await AddNonRootGoal(newGoal);
+                return await AddNonRootGoal(newGoal);
             }
         }
 
-        private async Task AddNonRootGoal(NewGoalDto newGoal)
+        private async Task<int> AddNonRootGoal(NewGoalDto newGoal)
         {
             var goalDbObject = newGoal.ToGoal();
 
@@ -71,9 +54,11 @@ namespace HabitsApi2.Services
             if (parentsLastChild != null)
             {
                 var addedGoalId = _goalRepository.AddNewGoal(goalDbObject);
+                
                 parentsLastChild.NextSiblingId = addedGoalId;
                 parentsLastChild.ModifiedDate = DateTime.UtcNow;
                 _goalRepository.UpdateGoal(parentsLastChild);
+                return addedGoalId;
             }
             else
             {
@@ -82,13 +67,14 @@ namespace HabitsApi2.Services
                 parentGoal.FirstChildId = addedGoalId;
                 parentGoal.ModifiedDate = DateTime.UtcNow;
                 _goalRepository.UpdateGoal(parentGoal);
+                return addedGoalId;
             }
         }
 
-        private void AddRootGoal(NewGoalDto newGoal)
+        private int AddRootGoal(NewGoalDto newGoal)
         {
             var goalDbObject = newGoal.ToGoal();
-            var addedGoalId = _goalRepository.AddNewGoal(goalDbObject);
+            return _goalRepository.AddNewGoal(goalDbObject);
         }
 
         public async Task DeleteGoal(int id)
@@ -109,8 +95,10 @@ namespace HabitsApi2.Services
                 var potentialPreviousSibling = _goalRepository.GetPreviousSibling(id);
                 if (potentialPreviousSibling != null)
                 {
-                    potentialPreviousSibling.NextSiblingId = 0;
+                    potentialPreviousSibling.NextSiblingId = null;
+                    potentialPreviousSibling.NextSibling = null;
                     _goalRepository.UpdateGoal(potentialPreviousSibling);
+                    _db.SaveChanges();
                     await _goalRepository.Delete(id);
                 }
                 else
@@ -119,12 +107,14 @@ namespace HabitsApi2.Services
                     if (parentGoal == null)
                     {
                         // this is a root node
-                        await _goalRepository.Delete(id);
+                        await _goalRepository.Delete( id);
                     }
                     else
                     {
-                        parentGoal.FirstChildId = 0;
+                        parentGoal.FirstChildId = null;
+                        parentGoal.FirstChild = null;
                         _goalRepository.UpdateGoal(parentGoal);
+                        _db.SaveChanges();
                         await _goalRepository.Delete(id);
                     }
                 }
@@ -138,6 +128,7 @@ namespace HabitsApi2.Services
                 {
                     potentialPreviousSibling.NextSiblingId = goal.NextSiblingId;
                     _goalRepository.UpdateGoal(potentialPreviousSibling);
+                    _db.SaveChanges();
                     await _goalRepository.Delete(id);
                 }
                 else
@@ -151,6 +142,7 @@ namespace HabitsApi2.Services
                     {
                         parentGoal.FirstChildId = goal.NextSiblingId;
                         _goalRepository.UpdateGoal(parentGoal);
+                        _db.SaveChanges();
                         await _goalRepository.Delete(id);
                     }
                 }
@@ -163,6 +155,12 @@ namespace HabitsApi2.Services
             goal.IsCompleted = updatedGoal.IsCompleted;
             goal.CompletedDate = updatedGoal.CompletedDate;
             _goalRepository.UpdateGoal(goal);
+        }
+
+        public async Task<GoalViewModel> GetById(int id)
+        {
+            var dbGoal = await _goalRepository.GetById(id);
+            return ToViewModel(dbGoal);
         }
     }
 }

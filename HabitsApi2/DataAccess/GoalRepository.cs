@@ -1,4 +1,6 @@
-﻿using HabitsApi2.Models;
+﻿using HabitsApi2.Context;
+using HabitsApi2.Models;
+using HabitsApi2.Models.Automagic;
 using Microsoft.EntityFrameworkCore;
 
 namespace HabitsApi2.DataAccess
@@ -28,34 +30,34 @@ namespace HabitsApi2.DataAccess
         public async Task<Goal> GetLastChild(int id)
         {
             var parentGoal = await GetRecursively(id);
-            if (parentGoal.FirstChildId == 0)
+            if (parentGoal.FirstChildId == null)
             {
                 return null;
             }
 
             var lastChild = parentGoal.FirstChild;
             var idx = 0;
-            while (lastChild.NextSiblingId != 0 && idx < 1000)
+            while (lastChild?.NextSiblingId != null && idx < 1000)
             {
-                lastChild = lastChild.NextSibling;
+                lastChild = lastChild?.NextSibling;
                 idx++;
             }
 
             return lastChild;
         }
 
-        private async Task<Goal> GetRecursively(int id)
+        private async Task<Goal> GetRecursively(int? id)
         {
             var goal = await _dbContext.Goals.FindAsync(id);
             if (goal == null)
             {
                 return null;
             }
-            if (goal.FirstChildId != 0)
+            if (goal.FirstChildId != null)
             {
                 goal.FirstChild = await GetRecursively(goal.FirstChildId);
             }
-            if (goal.NextSiblingId != 0)
+            if (goal.NextSiblingId != null)
             {
                 goal.NextSibling = await GetRecursively(goal.NextSiblingId);
             }
@@ -64,7 +66,7 @@ namespace HabitsApi2.DataAccess
 
         public int AddNewGoal(Goal goal)
         {
-            var addedGoal =_dbContext.Goals.Add(goal);
+            var addedGoal = _dbContext.Goals.Add(goal);
             _dbContext.SaveChanges();
             return addedGoal.Entity.Id;
         }
@@ -72,7 +74,6 @@ namespace HabitsApi2.DataAccess
         public void UpdateGoal(Goal goal)
         {
             _dbContext.Goals.Update(goal);
-            _dbContext.SaveChanges();
         }
 
         public async Task<Goal> GetById(int id)

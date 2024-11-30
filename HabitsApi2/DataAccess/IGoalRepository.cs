@@ -1,4 +1,5 @@
-﻿using HabitsApi2.Models;
+﻿using HabitsApi2.Context;
+using HabitsApi2.Models;
 
 namespace HabitsApi2.DataAccess
 {

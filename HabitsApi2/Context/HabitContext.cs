@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace HabitsApi2.DataAccess
+namespace HabitsApi2.Context
 {
     public class HabitContext(DbContextOptions<HabitContext> options) : DbContext(options)
     {

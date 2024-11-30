@@ -1,6 +1,11 @@
 
+using HabitsApi2.Context;
 using HabitsApi2.DataAccess;
+using HabitsApi2.DataAccess.Automagic;
+using HabitsApi2.DataAccess.Difficult;
 using HabitsApi2.Services;
+using HabitsApi2.Services.Automagic;
+using HabitsApi2.Services.Difficult;
 using Microsoft.EntityFrameworkCore;
 
 namespace HabitsApi2
@@ -20,6 +25,10 @@ namespace HabitsApi2
 
             builder.Services.AddScoped<IGoalsService, GoalsService>();
             builder.Services.AddScoped<IGoalRepository, GoalRepository>();
+            builder.Services.AddScoped<IGoalsServiceAutomagic, GoalsServiceAutomagic>();
+            builder.Services.AddScoped<IGoalRepositoryAutomagic, GoalRepositoryAutomagic>();
+            builder.Services.AddScoped<IGoalsServiceDifficult, GoalsServiceDifficult>();
+            builder.Services.AddScoped<IGoalRepositoryDifficult, GoalRepositoryDifficult>();
 
             builder.Services.AddCors(options =>
             {
@@ -29,7 +38,13 @@ namespace HabitsApi2
             builder.Services.AddDbContext<HabitContext>(options =>
             {
                 var connectionString = builder.Configuration.GetConnectionString("HabitsConnection");
-                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine, LogLevel.Information);
+            }); 
+            
+            builder.Services.AddDbContext<HabitContextAutomagic>(options =>
+            {
+                var connectionString = builder.Configuration.GetConnectionString("HabitsConnection");
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine, LogLevel.Information);
             });
 
             var app = builder.Build();

@@ -1,12 +1,13 @@
 ﻿using HabitsApi2.Models;
+using HabitsApi2.Models.Automagic;
 
 namespace HabitsApi2.Helpers
 {
-    public static class NewGoalDtoExtensions
+    public static class NewGoalAutomagicDtoExtensions
     {
-        public static Goal ToGoal(this NewGoalDto goalDto)
+        public static GoalAutomagic ToGoal(this NewGoalAutomagicDto goalDto)
         {
-            return new Goal()
+            return new GoalAutomagic()
             {
                 CreatedDate = DateTime.UtcNow,
                 ModifiedDate = DateTime.UtcNow,

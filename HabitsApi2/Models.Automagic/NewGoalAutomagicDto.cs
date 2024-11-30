@@ -1,6 +1,6 @@
-﻿namespace HabitsApi2.Models
+﻿namespace HabitsApi2.Models.Automagic
 {
-    public class NewGoalDto
+    public class NewGoalAutomagicDto
     {
         public string Title { get; set; }
         public string Text { get; set; }

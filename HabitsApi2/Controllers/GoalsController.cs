@@ -1,4 +1,6 @@
-﻿using HabitsApi2.Models;
+﻿using HabitsApi2.Context;
+using HabitsApi2.Models;
+using HabitsApi2.Models.Automagic;
 using HabitsApi2.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +12,13 @@ namespace HabitsApi2.Controllers
     {
         private readonly ILogger<GoalsController> _logger;
         private readonly IGoalsService _goalsService;
+        private readonly HabitContext _db;
 
-        public GoalsController(ILogger<GoalsController> logger, IGoalsService goalsService)
+        public GoalsController(HabitContext db, ILogger<GoalsController> logger, IGoalsService goalsService)
         {
             _logger = logger;
             _goalsService = goalsService;
+            _db = db;
         }
 
         [HttpGet(Name = "GetGoals")]
@@ -23,25 +27,35 @@ namespace HabitsApi2.Controllers
             return await _goalsService.GetAll();
         }
 
-        [HttpPost(Name = "addGoal")]
-        public async Task<ActionResult<bool>> AddGoal([FromBody] NewGoalDto newGoal)
+        [HttpGet("id")]
+        public async Task<GoalViewModel> GetById([FromQuery] int id)
         {
-            await _goalsService.AddGoal(newGoal);
-            return true;
+            return await _goalsService.GetById(id);
+        }
+
+        [HttpPost(Name = "AddGoal")]
+        public async Task<ActionResult<int>> AddGoal([FromBody] NewGoalDto newGoal)
+        {
+            newGoal.UserId = 1;
+            var addedGoalId = await _goalsService.AddGoal(newGoal);
+            _db.SaveChanges();
+            return addedGoalId;
         }
 
         [HttpDelete]
-        public async Task<ActionResult<bool>> DeleteGoal(int id)
+        public async Task<ActionResult<int>> DeleteGoal(int id)
         {
             await _goalsService.DeleteGoal(id);
-            return true;
+            _db.SaveChanges();
+            return id;
         }
 
         [HttpPut]
-        public async Task<ActionResult<bool>> UpdateGoal([FromQuery] int id, [FromBody] UpdateGoalDto updatedGoal)
+        public async Task<ActionResult<int>> UpdateGoal([FromQuery] int id, [FromBody] UpdateGoalDto updatedGoal)
         {
             await _goalsService.UpdateGoal(updatedGoal);
-            return true;
+            _db.SaveChanges();
+            return id;
         }
     }
 }
