@@ -15,5 +15,6 @@ namespace HabitsApi2.DataAccess.Automagic
         Task DeleteGoal(GoalAutomagic goal);
         GoalAutomagic GetPreviousSibling(GoalAutomagic goal);
         GoalAutomagic GetParent(GoalAutomagic goal);
+        int? GetLatestRoot();
     }
 }

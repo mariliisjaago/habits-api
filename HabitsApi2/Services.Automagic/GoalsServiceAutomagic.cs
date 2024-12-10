@@ -71,7 +71,7 @@ namespace HabitsApi2.Services.Automagic
 
         public async Task<int> DeleteGoal(int id)
         {
-            var goal = await _goalRepository.GetById(id);
+            var goal = await _goalRepository.GetByIdRecursively(id);
             if (goal == null)
             {
                 return -1;
@@ -149,8 +149,21 @@ namespace HabitsApi2.Services.Automagic
 
         public async Task<GoalAutomagicViewModel> GetById(int id)
         {
-            var dbGoal = await _goalRepository.GetByIdRecursively(id);
-            return ToViewModel(dbGoal);
+            if (id == 0)
+            {
+                var latestRootId = _goalRepository.GetLatestRoot();
+                if (latestRootId != null)
+                {
+                    var latestRoot = await _goalRepository.GetByIdRecursively(latestRootId.Value);
+                    return ToViewModel(latestRoot);
+                }
+                return null;
+            }
+            else
+            {
+                var dbGoal = await _goalRepository.GetByIdRecursively(id);
+                return ToViewModel(dbGoal);
+            }
         }
     }
 }

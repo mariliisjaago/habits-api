@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HabitsApi2")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ad1a1292d400792206029149eabfaa4bb9a6fc2f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+278c7e8f04797ab532a40978e886e832001f3fb3")]
 [assembly: System.Reflection.AssemblyProductAttribute("HabitsApi2")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HabitsApi2")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

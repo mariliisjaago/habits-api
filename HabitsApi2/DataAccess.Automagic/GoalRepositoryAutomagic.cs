@@ -99,5 +99,10 @@ namespace HabitsApi2.DataAccess.Automagic
         {
             return _db.Goals.FirstOrDefault(g => g.FirstChild == goal);
         }
+
+        public int? GetLatestRoot()
+        {
+            return _db.Goals.Where(g => g.IsRoot).OrderByDescending(r => r.CreatedDate).FirstOrDefault()?.Id;
+        }
     }
 }
